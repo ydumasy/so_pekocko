@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const userRoutes = require('./routes/user');
+
 require('dotenv').config();
 
 const app = express();
@@ -9,8 +11,6 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-app.use((req, res) => {
-   res.json({ message: 'Le serveur fonctionne avec Express' }); 
-});
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
