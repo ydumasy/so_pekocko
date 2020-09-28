@@ -29,7 +29,7 @@ exports.login = (req, res) => {
                     } else {
                         res.status(200).json({
                             userId: user._id,
-                            token: jwt.sign({ userId: user._id }, 'RANDOM_SECRET_KEY', { expiresIn: '24h' })
+                            token: jwt.sign({ userId: user._id }, 'Gq8SZFSVIehzomW9QSjRUZ7Vlc5ykogXJMebbe3M', { expiresIn: '24h' })
                         });
                     }
                 })
