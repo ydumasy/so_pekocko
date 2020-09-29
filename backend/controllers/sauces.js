@@ -16,12 +16,10 @@ exports.getSauceById = (req, res) => {
 exports.createSauce = (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete req.body._id;
-    console.log(sauceObject);
     const sauce = new Sauce({
         ...sauceObject,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
-    console.log(sauce);
     sauce.save()
         .then(() => res.status(201).json({ message: "Nouvelle sauce créée" }))
         .catch(err => res.status(400).json({ err }));
