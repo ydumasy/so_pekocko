@@ -1,12 +1,23 @@
 const sanitize = require('mongo-sanitize');
+const passwordValidator = require('password-validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+const schema = new passwordValidator;
+
+schema
+.is().min(8)
+.has().uppercase()
+.has().lowercase()
+.has().digits()
+.has().not().spaces()
+
 exports.signup = (req, res) => {
     const email = sanitize(req.body.email);
     const password = sanitize(req.body.password);
-    bcrypt.hash(password, 10)
+    if (schema.validate(req.body.password)) {
+        bcrypt.hash(password, 10)
         .then(hash => {
             const user = new User({
                 email: email,
@@ -17,6 +28,9 @@ exports.signup = (req, res) => {
                 .catch(err => res.status(400).json({ err }));
         })
         .catch(err => res.status(500).json({ err }));
+    } else {
+        res.status(401).json({ error: "Le mot de passe doit contenir au minimum 8 caractères, comprendre au moins un caractère majuscule, un caractère minuscule et un chiffre et ne doit pas contenir d'espace" })
+    }
 };
 
 exports.login = (req, res) => {
