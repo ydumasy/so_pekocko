@@ -16,11 +16,13 @@ schema
 exports.signup = (req, res) => {
     const email = sanitize(req.body.email);
     const password = sanitize(req.body.password);
+    const buffer = Buffer.from(email);
+    const maskedEmail = buffer.toString('base64');
     if (schema.validate(req.body.password)) {
         bcrypt.hash(password, 10)
         .then(hash => {
             const user = new User({
-                email: email,
+                email: maskedEmail,
                 password: hash
             });
             user.save()
@@ -36,7 +38,9 @@ exports.signup = (req, res) => {
 exports.login = (req, res) => {
     const email = sanitize(req.body.email);
     const password = sanitize(req.body.password);
-    User.findOne({ email: email })
+    const buffer = Buffer.from(email);
+    const maskedEmail = buffer.toString('base64');
+    User.findOne({ email: maskedEmail })
         .then(user => {
             if (!user) {
                 return res.status(401).json({ error: "Utilisateur non trouvé" });
