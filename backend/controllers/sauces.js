@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Sauce = require('../models/Sauce');
 
+// Fonctions READ
 exports.getSauces = (req, res) => {
     Sauce.find()
         .then(sauces => res.status(200).json(sauces))
@@ -13,6 +14,7 @@ exports.getSauceById = (req, res) => {
         .catch(err => res.status(404).json({ err }));
 };
 
+// Fonction CREATE
 exports.createSauce = (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete req.body._id;
@@ -25,6 +27,7 @@ exports.createSauce = (req, res) => {
         .catch(err => res.status(400).json({ err }));
 };
 
+// Fonction UPDATE
 exports.modifySauce = (req, res) => {
     if (req.file) {
         Sauce.findOne({ _id: req.params.id })
@@ -40,6 +43,7 @@ exports.modifySauce = (req, res) => {
         .catch(err => res.status(400).json({ err }));
 };
 
+// Fonction DELETE
 exports.deleteSauce = (req, res) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
@@ -52,6 +56,7 @@ exports.deleteSauce = (req, res) => {
         .catch(err => res.status(500).json({ err }));
 };
 
+// Fonction de gestion des avis utilisateur
 exports.likeSauce = (req, res) => {
     if (req.body.like === 1) {
         Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: 1 }, $push: { usersLiked: req.body.userId } })

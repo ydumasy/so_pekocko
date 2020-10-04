@@ -1,10 +1,13 @@
+// Utilisation d'un router
 const express = require('express');
-const saucesCtrl = require('../controllers/sauces');
+const router = express.Router();
+
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
 
-const router = express.Router();
+const saucesCtrl = require('../controllers/sauces');
 
+// Création des routes sauces
 router.get('/', auth, saucesCtrl.getSauces);
 router.get('/:id', auth, saucesCtrl.getSauceById);
 router.post('/', auth, multer, saucesCtrl.createSauce);

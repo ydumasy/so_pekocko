@@ -2,10 +2,12 @@ const sanitize = require('mongo-sanitize');
 const passwordValidator = require('password-validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
 const User = require('../models/User');
 
 const schema = new passwordValidator;
 
+// Spécification des règles à respecter pour la création du mot de passe
 schema
 .is().min(8)
 .has().uppercase()
@@ -13,12 +15,13 @@ schema
 .has().digits()
 .has().not().spaces()
 
+// Fonction d'inscription
 exports.signup = (req, res) => {
     const email = sanitize(req.body.email);
     const password = sanitize(req.body.password);
     const buffer = Buffer.from(email);
     const maskedEmail = buffer.toString('base64');
-    if (schema.validate(req.body.password)) {
+    if (schema.validate(password)) {
         bcrypt.hash(password, 10)
         .then(hash => {
             const user = new User({
@@ -35,6 +38,7 @@ exports.signup = (req, res) => {
     }
 };
 
+// Fonction de connexion
 exports.login = (req, res) => {
     const email = sanitize(req.body.email);
     const password = sanitize(req.body.password);
