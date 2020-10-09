@@ -1,4 +1,5 @@
 const sanitize = require('mongo-sanitize');
+const emailValidator = require('email-validator');
 const passwordValidator = require('password-validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -20,21 +21,25 @@ exports.signup = (req, res) => {
     const email = sanitize(req.body.email);
     const password = sanitize(req.body.password);
     const buffer = Buffer.from(email);
-    const maskedEmail = buffer.toString('base64');
-    if (schema.validate(password)) {
-        bcrypt.hash(password, 10)
-        .then(hash => {
-            const user = new User({
-                email: maskedEmail,
-                password: hash
-            });
-            user.save()
-                .then(() => res.status(201).json({ message: "Nouvel utilisateur créé" }))
-                .catch(err => res.status(400).json({ err }));
-        })
-        .catch(err => res.status(500).json({ err }));
+    if (emailValidator.validate(email)) {
+        if (schema.validate(password)) {
+            const maskedEmail = buffer.toString('base64');
+            bcrypt.hash(password, 10)
+            .then(hash => {
+                const user = new User({
+                    email: maskedEmail,
+                    password: hash
+                });
+                user.save()
+                    .then(() => res.status(201).json({ message: "Nouvel utilisateur créé" }))
+                    .catch(err => res.status(400).json({ err }));
+            })
+            .catch(err => res.status(500).json({ err }));
+        } else {
+            res.status(401).json({ error: "Le mot de passe doit contenir au minimum 8 caractères, comprendre au moins un caractère majuscule, un caractère minuscule et un chiffre et ne doit pas contenir d'espace" })
+        }
     } else {
-        res.status(401).json({ error: "Le mot de passe doit contenir au minimum 8 caractères, comprendre au moins un caractère majuscule, un caractère minuscule et un chiffre et ne doit pas contenir d'espace" })
+        res.status(401).json({ error: "E-mail invalide" })
     }
 };
 
